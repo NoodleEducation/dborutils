@@ -19,12 +19,12 @@ history = open('HISTORY.md').read().replace('.. :changelog:', '')
 
 setup(
     name='dborutils',
-    version='0.1.0',
+    version='0.2.0',
     description='DBOR Utilities contains shared classes related to our Database of Record Project',
     long_description=readme + '\n\n' + history,
     author='Josvic Zammit',
     author_email='jvzammit@gmail.com',
-    url='https://github.com/jvzammit/dborutils',
+    url='https://github.com/NoodleEducation/dborutils',
     packages=[
         'dborutils',
     ],
