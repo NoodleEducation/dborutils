@@ -15,6 +15,11 @@ To install a particular branch only:
 ```
 pip install git+https://github.com/NoodleEducation/dborutils.git@[branch-name]
 ```
+### Github Two Factor Authentication
+
+If you have enabled Github two factor authentication, then you will need to provide
+an auth token instead of your password when installing. You create and save a token
+on Github's site.
 
 ### MySQL-related OS X specific warnings
 
@@ -28,7 +33,7 @@ In file included from _mysql.c:44:
 /usr/local/mysql/include/my_config.h:348:11: warning: 'SIZEOF_SIZE_T' macro redefined
   #define SIZEOF_SIZE_T  SIZEOF_LONG
           ^
-/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/include/python2.7/pymacconfig.h:43:17: note: 
+/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/include/python2.7/pymacconfig.h:43:17: note:
       previous definition is here
 #        define SIZEOF_SIZE_T           8
                 ^
@@ -36,7 +41,7 @@ In file included from _mysql.c:44:
 /usr/local/mysql/include/my_config.h:442:9: warning: 'HAVE_WCSCOLL' macro redefined
 #define HAVE_WCSCOLL
         ^
-/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/include/python2.7/pyconfig.h:908:9: note: 
+/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/include/python2.7/pyconfig.h:908:9: note:
       previous definition is here
 #define HAVE_WCSCOLL 1
         ^
