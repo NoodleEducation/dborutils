@@ -5,10 +5,11 @@ from bson import ObjectId
 
 class MongoCollection(object):
 
-    def __init__(self, noodle_client, filter=None):
+    def __init__(self, noodle_client, key="nice_key", filter=None):
 
         self.mongo = noodle_client
 
+        self.key = key
         self.source_collection = None
 
         self._provider_managed_keys = set()
@@ -25,14 +26,14 @@ class MongoCollection(object):
                  self.filter,
              ]
         } if self.filter else pm
-        documents = self.mongo.find(pm_filter, {"nice_key": 1})
-        self._provider_managed_keys = {d["nice_key"] for d in documents}
+        documents = self.mongo.find(pm_filter, {self.key: 1})
+        self._provider_managed_keys = {d[self.key] for d in documents}
 
-        self.key_to_mongo_id = {d["nice_key"]: d["_id"] \
-            for d in self.mongo.find(self.filter, {"nice_key": 1})}
+        self.key_to_mongo_id = {d[self.key]: d["_id"] \
+            for d in self.mongo.find(self.filter, {self.key: 1})}
 
     def count(self):
-        return self.mongo.find(self.filter, {"nice_key": 1}).count()
+        return self.mongo.find(self.filter, {self.key: 1}).count()
 
     def provider_managed_keys(self):
 
@@ -97,7 +98,7 @@ class NoodleWriteableCollection(MongoCollection):
         Abstract base class for managing writeable Mongo collections
     """
 
-    def __init__(self, noodle_client, dryrun=None, filter=None,
+    def __init__(self, noodle_client, key="nice_key", dryrun=None, filter=None,
         ):
 
         self.dryrun = dryrun
@@ -106,7 +107,7 @@ class NoodleWriteableCollection(MongoCollection):
         self._updated_document_count = 0
         self._deleted_document_count = 0
 
-        super(NoodleWriteableCollection, self).__init__(noodle_client, filter=filter)
+        super(NoodleWriteableCollection, self).__init__(noodle_client, key=key, filter=filter)
 
     def insert(self, action_list):
 
@@ -153,7 +154,7 @@ class NoodleDborCollection(NoodleWriteableCollection):
 
     def __init__(self, noodle_client, dryrun=None, filter=None):
 
-        super(NoodleDborCollection, self).__init__(noodle_client, dryrun=dryrun, filter=filter)
+        super(NoodleDborCollection, self).__init__(noodle_client, key="synkey", dryrun=dryrun, filter=filter)
 
         pending = {"pending": 1}
         self.pending_filter = {
@@ -235,7 +236,7 @@ class NoodleProductionCollection(NoodleWriteableCollection):
         Also managed queue insersions for SOLR indexing.
     """
 
-    def __init__(self, noodle_client, queue_manager=None, dryrun=None, filter=None,
+    def __init__(self, noodle_client, key="nice_key", queue_manager=None, dryrun=None, filter=None,
         ):
 
         self.key_service = NoodleKeyService(
@@ -245,7 +246,7 @@ class NoodleProductionCollection(NoodleWriteableCollection):
 
         self.queue_manager = queue_manager
 
-        super(NoodleProductionCollection, self).__init__(noodle_client, dryrun=dryrun, filter=filter)
+        super(NoodleProductionCollection, self).__init__(noodle_client, key=key, dryrun=dryrun, filter=filter)
 
     def insert(self, keys_to_insert):
 
