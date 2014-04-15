@@ -1,5 +1,5 @@
 from datetime import datetime
-from noodle_key_service import NoodleKeyService
+from .key_service import NoodleKeyService
 from bson import ObjectId
 
 
