@@ -7,14 +7,16 @@ class NoodleKeyService(object):
     NICE_KEY_GOAL_LENGTH = 5
 
     def __init__(self,
-        source_client,
-        destination_client,
+        source_client=None,
+        destination_client=None,
     ):
 
         self.source_client = source_client
-        self.destination_client = destination_client
+        self.prefix = None
 
-        self.prefix = self.destination_client.get_category_code()
+        if destination_client:
+            self.destination_client = destination_client
+            self.prefix = self.destination_client.get_category_code()
 
         self._generated_nice_keys = {}
 
@@ -22,7 +24,7 @@ class NoodleKeyService(object):
 
         return "{0}{1}".format(self.prefix, uuid1())
 
-    def generate_nice_key(self, namespace_collection):
+    def generate_nice_key(self, namespace_collection=None, prefix=None):
         """Generate a nice key with a limited number of tries for uniqueness."""
 
         result = None
@@ -32,15 +34,20 @@ class NoodleKeyService(object):
         length_margin = 3
         unique_tries = 10
 
-        curr_goal_len = self.NICE_KEY_GOAL_LENGTH
+        curr_goal_len = NoodleKeyService.NICE_KEY_GOAL_LENGTH
 
+        if namespace_collection is None:
+
+            namespace_collection = self.destination_client.collection()
+
+        prefix = prefix or self.prefix
         # Try to get key of length [goal_len] up until [goal_len + length_margin]
         for i in range(length_margin):
 
             # Try to obtain unique key maximum of [unique_tries] times
             for j in range(unique_tries):
 
-                candidate_nice_key = self.prefix + uuid4().hex[0:curr_goal_len]
+                candidate_nice_key = prefix + uuid4().hex[0:curr_goal_len]
 
                 matchObject = {"nice_key": candidate_nice_key}
 
