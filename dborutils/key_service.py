@@ -24,7 +24,7 @@ class NoodleKeyService(object):
 
         return "{0}{1}".format(self.prefix, uuid1())
 
-    def generate_nice_key(self, namespace_collection=None, prefix=None):
+    def generate_nice_key(self, prefix=None):
         """Generate a nice key with a limited number of tries for uniqueness."""
 
         result = None
@@ -36,10 +36,6 @@ class NoodleKeyService(object):
 
         curr_goal_len = NoodleKeyService.NICE_KEY_GOAL_LENGTH
 
-        if namespace_collection is None:
-
-            namespace_collection = self.destination_client.collection()
-
         prefix = prefix or self.prefix
         # Try to get key of length [goal_len] up until [goal_len + length_margin]
         for i in range(length_margin):
@@ -49,13 +45,11 @@ class NoodleKeyService(object):
 
                 candidate_nice_key = prefix + uuid4().hex[0:curr_goal_len]
 
-                matchObject = {"nice_key": candidate_nice_key}
-
                 if candidate_nice_key not in self._generated_nice_keys:
 
                     self._generated_nice_keys[candidate_nice_key] = None
 
-                    if namespace_collection.find(matchObject).count() == 0:
+                    if self._is_nice_key_unique(candidate_nice_key):
 
                         # Found!
                         result = candidate_nice_key
@@ -69,6 +63,12 @@ class NoodleKeyService(object):
             curr_goal_len += 1
 
         return result
+
+    def _is_nice_key_unique(self, candidate_nice_key):
+        """Verify uniqueness against the source mongo collection."""
+
+        return self.source_client.collection() \
+            .find({"nice_key": candidate_nice_key}).count() == 0
 
     def update_document_nice_key(self, doc, nice_key):
 
