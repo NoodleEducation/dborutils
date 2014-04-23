@@ -5,15 +5,15 @@ class AbstractQueueManager(object):
 
     def queue_insert(self, n_keys):
 
-        raise NotImplementedException("Subclasses must implement queue_insert()")
+        raise NotImplementedError("Subclasses must implement queue_insert()")
 
     def queue_update(self, n_keys):
 
-        raise NotImplementedException("Subclasses must implement queue_update()")
+        raise NotImplementedError("Subclasses must implement queue_update()")
 
     def queue_delete(self, n_keys):
 
-        raise NotImplementedException("Subclasses must implement queue_delete()")
+        raise NotImplementedError("Subclasses must implement queue_delete()")
 
 
 class NoopQueueManager(object):
