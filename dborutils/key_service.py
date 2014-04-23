@@ -131,11 +131,9 @@ class NoodleKeyService(object):
             print "{0} empty nice key docs found".format(total_empty_nice_keys)
             progress_report = "PROCESSED {0}/{1}".format("{0}", total_empty_nice_keys)
 
-            collection = self.source_client.collection()
-
             for ct, doc in enumerate(empty_nice_keys):
 
-                nice_key = self.generate_nice_key(collection)
+                nice_key = self.generate_nice_key()
 
                 if nice_key:
 
