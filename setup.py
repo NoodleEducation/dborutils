@@ -19,7 +19,7 @@ history = open('HISTORY.md').read().replace('.. :changelog:', '')
 
 setup(
     name='dborutils',
-    version='0.3.0',
+    version='0.3.1',
     description='DBOR Utilities contains shared classes related to our Database of Record Project',
     long_description=readme + '\n\n' + history,
     author='Josvic Zammit',
