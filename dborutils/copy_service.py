@@ -76,7 +76,7 @@ class NoodleMongoProdCopyService(NoodleCopyService):
     def copy_source_to_destination(self):
 
         provider_managed_set = self.destination_documents.provider_managed_keys()
-        source_set = frozenset(self.source_documents) - provider_managed_set
+        source_set = self.get_source_keyset(provider_managed_set)
         dest_set = frozenset(self.destination_documents) - provider_managed_set
 
         self.destination_documents.set_source_collection(self.source_documents)
@@ -124,6 +124,12 @@ class NoodleMongoProdCopyService(NoodleCopyService):
         provider_managed_cnt = self.destination_documents.provider_managed_document_count()
 
         self.display_completion("Loader completed", source_docs_cnt, dest_docs_cnt, provider_managed_cnt)
+
+    def get_source_keyset(self, provider_managed_set=None):
+
+        return frozenset(self.source_documents) \
+            - (provider_managed_set \
+                 or self.destination_documents.provider_managed_keys())
 
 
 class NoodleScrapedMongoCopyService(NoodleCopyService):
