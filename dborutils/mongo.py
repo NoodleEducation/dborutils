@@ -3,7 +3,6 @@ from .key_service import NoodleKeyService
 from bson import ObjectId
 
 
-class MongoCollection(object):
 class AbstractDocumentCollection(object):
 
     def __init__(self, key="nice_key", filter=None):
@@ -49,6 +48,7 @@ class AbstractDocumentCollection(object):
         raise NotImplementedError("Subclasses must implement __len__()")
 
 
+class MongoCollection(AbstractDocumentCollection):
 
     def __init__(self, noodle_client, key="nice_key", filter=None):
 
@@ -79,14 +79,6 @@ class AbstractDocumentCollection(object):
 
     def count(self):
         return self.mongo.find(self.filter, {self.key: 1}).count()
-
-    def provider_managed_keys(self):
-
-        return self._provider_managed_keys
-
-    def provider_managed_document_count(self):
-
-        return len(self._provider_managed_keys)
 
     def _ensure_indices(self):
 
