@@ -67,8 +67,8 @@ as suggested by this [answer on SO](http://stackoverflow.com/a/6853460/1211429).
 
 ## Usage
 
-You can import, for instance, the `NoodleLogger` class, this way:
+You can import, for instance, the `MongoCollection` class, this way:
 
 ```
-from dborutils.logger import NoodleLogger
+from dborutils.mongo import MongoCollection
 ```
