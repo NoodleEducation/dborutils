@@ -36,6 +36,10 @@ class NoodleCopyService(object):
 
         raise NotImplementedError("copy_source_to_destination must be implemented.")
 
+    def get_source_keyset(self, provider_managed_set=None):
+
+        raise NotImplementedError("get_source_keyset must be implemented.")
+
     def display_completion(self, completion_message, source_docs_cnt, dest_docs_cnt, provider_managed_cnt=None):
 
         self.logger.info(completion_message)
