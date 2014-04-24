@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from .logger import NoodleLogger
+import logging
 
 
 class BatchManager(object):
@@ -73,7 +73,7 @@ class BatchManager(object):
 
             self.start_time = datetime.now()
             self.status_size = status_size
-            self.log = NoodleLogger().logger
+            self.log = logging
 
             self.action = 'action'
             self.source_length = 1
@@ -88,14 +88,14 @@ class BatchManager(object):
             self.interval_time = datetime.now()
             self.handled_count = Decimal(0)
 
-            self.log("info", "{0}...".format(action))
-            self.log("info", "{0} {1} documents on destination".format(action, source_length))
+            self.log.info("{0}...".format(action))
+            self.log.info("{0} {1} documents on destination".format(action, source_length))
 
         def done(self):
 
             self.progress(complete=True)
             if self.handled_count:
-                self.log("info", "Done processing {0} on {1} documents on destination".format(self.action, self.handled_count))
+                self.log.info("Done processing {0} on {1} documents on destination".format(self.action, self.handled_count))
 
         def progress(self, complete=False):
 
@@ -113,7 +113,7 @@ class BatchManager(object):
                     pct_done = 0
                     eta = 0
 
-                self.log("info", fmt.format(self.action,
+                self.log.info(fmt.format(self.action,
                     pct_done,
                     interval_duration.seconds,
                     round(duration.seconds / 60.0, 2),
