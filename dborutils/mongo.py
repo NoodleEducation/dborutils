@@ -257,7 +257,7 @@ class NoodleDborCollection(NoodleWriteableCollection):
                 self.mongo.save(updated_document)
                 self._updated_document_count += 1
 
-    def delete(self):
+    def delete(self, action_list=None):
 
         if not self.dryrun:
             self._deleted_document_count += self.mongo.find(self.pending_filter).count()
