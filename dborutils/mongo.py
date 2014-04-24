@@ -4,6 +4,51 @@ from bson import ObjectId
 
 
 class MongoCollection(object):
+class AbstractDocumentCollection(object):
+
+    def __init__(self, key="nice_key", filter=None):
+
+        self.key = key
+        self._provider_managed_keys = set()
+        self.filter = dict(filter or {})
+
+        self._provider_managed_keys = {}
+
+        self.key_to_d_id = {}
+
+    def provider_managed_keys(self):
+
+        return self._provider_managed_keys
+
+    def provider_managed_document_count(self):
+
+        return len(self._provider_managed_keys)
+
+    def count(self):
+
+        raise NotImplementedError("Subclasses must implement count()")
+
+    def __getitem__(self, key_value, fields=None):
+
+        raise NotImplementedError("Subclasses must implement __getitem__()")
+
+    def get(self, key_value, default=None, fields=None):
+
+        raise NotImplementedError("Subclasses must implement get()")
+
+    def __contains__(self, key):
+
+        raise NotImplementedError("Subclasses must implement __contains__()")
+
+    def __iter__(self):
+
+        raise NotImplementedError("Subclasses must implement __iter__()")
+
+    def __len__(self):
+
+        raise NotImplementedError("Subclasses must implement __len__()")
+
+
 
     def __init__(self, noodle_client, key="nice_key", filter=None):
 
