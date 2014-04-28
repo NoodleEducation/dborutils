@@ -3,7 +3,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "simple": {
-            "format": "%(asctime)s  %(name)s:%(lineno)s  %(levelname)s - %(message)s"
+            "format": "%(asctime)s  %(name)s:%(lineno)s  %(levelname)s - %(message)s",
         }
     },
 
@@ -11,7 +11,7 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
-            "formatter": "simple"
+            "formatter": "simple",
         }
     },
 
@@ -19,12 +19,12 @@ LOGGING = {
         "my_module": {
             "level": "ERROR",
             "handlers": ["console"],
-            "propagate": "no"
+            "propagate": "no",
         }
     },
 
     "root": {
         "level": "INFO",
-        "handlers": ["console"]
+        "handlers": ["console"],
     }
 }
