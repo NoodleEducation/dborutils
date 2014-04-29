@@ -1,5 +1,6 @@
 from .batch_manager import BatchManager
 import logging
+logger = logging.getLogger(__name__)
 
 
 class NoodleCopyService(object):
@@ -26,8 +27,6 @@ class NoodleCopyService(object):
         self.status = update_progress_at
         self.actions = actions
 
-        self.logger = logging
-
         self.batch_insert_size = 500
         self.batch_update_size = 200
         self.batch_delete_size = 400
@@ -42,23 +41,23 @@ class NoodleCopyService(object):
 
     def display_completion(self, completion_message, source_docs_cnt, dest_docs_cnt, provider_managed_cnt=None):
 
-        self.logger.info(completion_message)
+        logger.info(completion_message)
 
-        self.logger.info("Inserted {0} documents.".format(self.destination_documents.inserted_document_count()))
-        self.logger.info("Updated {0} documents.".format(self.destination_documents.updated_document_count()))
-        self.logger.info("Deleted {0} documents.".format(self.destination_documents.deleted_document_count()))
+        logger.info("Inserted {0} documents.".format(self.destination_documents.inserted_document_count()))
+        logger.info("Updated {0} documents.".format(self.destination_documents.updated_document_count()))
+        logger.info("Deleted {0} documents.".format(self.destination_documents.deleted_document_count()))
 
         cnt_skipped = self.destination_documents.unchanged_document_count()
         if cnt_skipped:
-            self.logger.info("Skipped {0} unchanged documents during update of this batch".format(cnt_skipped))
+            logger.info("Skipped {0} unchanged documents during update of this batch".format(cnt_skipped))
 
         if provider_managed_cnt is not None:
-            self.logger.info("{0} provider managed documents (skipped).".format(provider_managed_cnt))
+            logger.info("{0} provider managed documents (skipped).".format(provider_managed_cnt))
 
         if source_docs_cnt == dest_docs_cnt:
-            self.logger.info("Documents on source and destination match: {0}.".format(source_docs_cnt))
+            logger.info("Documents on source and destination match: {0}.".format(source_docs_cnt))
         else:
-            self.logger.info("WARNING! Documents on source and destination differ. Source {0} Destination {1}.".format(source_docs_cnt, dest_docs_cnt))
+            logger.info("WARNING! Documents on source and destination differ. Source {0} Destination {1}.".format(source_docs_cnt, dest_docs_cnt))
 
 
 class NoodleMongoProdCopyService(NoodleCopyService):
@@ -184,7 +183,7 @@ class NoodleScrapedMongoCopyService(NoodleCopyService):
 
         if "delete" in self.actions:
 
-            self.logger.info("Deleting documents...")
+            logger.info("Deleting documents...")
             self.destination_documents.delete()
 
         source_docs_cnt = self.get_source_documents_length()
