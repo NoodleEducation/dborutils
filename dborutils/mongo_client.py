@@ -21,7 +21,7 @@ class NoodleMongoClient(MongoClient):
 
         else:
 
-            raise KeyError("Count not find database '{1}' on host '{0}'".format(self.host, database))
+            raise KeyError("Could not find database '{1}' on host '{0}'".format(self.host, database))
 
         if collection:
             if create_collection:
@@ -36,7 +36,7 @@ class NoodleMongoClient(MongoClient):
 
                 else:
 
-                    raise KeyError("Count not find collection '{1}' in database '{0}'".format(self._database, collection))
+                    raise KeyError("Could not find collection '{1}' in database '{0}'".format(self._database, collection))
 
     def database(self):
 
@@ -91,7 +91,7 @@ class NoodleMongoClient(MongoClient):
 
         else:
 
-            raise KeyError("Count not find collection '{1}' in database '{0}'".format(self._database, collection))
+            raise KeyError("Could not find collection '{1}' in database '{0}'".format(self._database, collection))
 
         return result
 
