@@ -87,7 +87,7 @@ class MongoCollection(AbstractDocumentCollection):
             Ensures indices on provider_managed
         """
 
-        _ = [self.mongo.ensure_index(field, unique=True) for field in ['synkey', 'nice_key']]
+        _ = [self.mongo.ensure_index(field, unique=True) for field in ['nice_key']]
         self.mongo.ensure_index('provider_managed')
 
     def __getitem__(self, key_value, fields=None):
