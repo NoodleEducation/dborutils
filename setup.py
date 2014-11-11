@@ -31,7 +31,6 @@ setup(
     package_dir={'dborutils': 'dborutils'},
     include_package_data=True,
     install_requires=[
-        'MySQL-python==1.2.5',
         'pymongo==2.6.3',
     ],
     license="BSD",
