@@ -67,9 +67,9 @@ class MongoCollection(AbstractDocumentCollection):
         pm = {"provider_managed": True}
         pm_filter = {
             "$and": [
-                 pm,
-                 self.filter,
-             ]
+                pm,
+                self.filter,
+            ]
         } if self.filter else pm
         documents = self.mongo.find(pm_filter, {self.key: 1})
         self._provider_managed_keys = {d[self.key] for d in documents}
@@ -85,7 +85,6 @@ class MongoCollection(AbstractDocumentCollection):
         """
 
         _ = [self.mongo.ensure_index(field, unique=True) for field in ['nice_key']]
-        self.mongo.ensure_index('provider_managed')
 
     def __getitem__(self, key_value, fields=None):
         find_match = {'_id': ObjectId(
@@ -194,9 +193,9 @@ class NoodleDborCollection(NoodleWriteableCollection):
         pending = {"pending": 1}
         self.pending_filter = {
             "$and": [
-                 pending,
-                 self.filter,
-             ]
+                pending,
+                self.filter,
+            ]
         } if self.filter else pending
 
     def set_pending(self):
@@ -224,7 +223,7 @@ class NoodleDborCollection(NoodleWriteableCollection):
 
             destination_document = self[source_document["synkey"]]
 
-            #do dictionary compare to avoid i/o costs updates
+            # do dictionary compare to avoid i/o costs updates
             source_document.pop("_id", None)
             nice_key = destination_document.pop("nice_key", None)
             object_id = destination_document.pop("_id", None)
@@ -266,13 +265,12 @@ class NoodleDborCollection(NoodleWriteableCollection):
 
 class NoodleProductionCollection(NoodleWriteableCollection):
     """ Manages Production collections in which the document is
-        nested in a payload and nice_key/synkeys/n_keys are correctly maintained.
+        nested in a payload and nice_key/synkeys are correctly maintained.
 
-        Also managed queue insersions for SOLR indexing.
+        Also managed queue insertions for SOLR indexing.
     """
 
-    def __init__(self, noodle_client, key="nice_key", queue_manager=None, dryrun=None, filter=None,
-        ):
+    def __init__(self, noodle_client, key="nice_key", queue_manager=None, dryrun=None, filter=None):
 
         self.key_service = NoodleKeyService(
             source_client=None,
@@ -286,7 +284,6 @@ class NoodleProductionCollection(NoodleWriteableCollection):
     def insert(self, keys_to_insert):
 
         docs_to_insert = []
-        nkeys = []
 
         for key in keys_to_insert:
 
@@ -294,69 +291,53 @@ class NoodleProductionCollection(NoodleWriteableCollection):
 
             new_destination_document = self._create_destination_document(
                 source_document["synkey"],
-                None,
                 source_document['nice_key'],
                 source_document
             )
 
             docs_to_insert.append(new_destination_document)
 
-            nkeys.append(new_destination_document['n_key'])
-
         if not self.dryrun:
 
             self.mongo.insert(docs_to_insert)
             self._inserted_document_count += len(docs_to_insert)
-            self.queue_manager.queue_insert(nkeys)
+            self.queue_manager.queue_insert(keys_to_insert)
 
     def update(self, keys_to_update):
 
-        nkeys = []
-
         for key in keys_to_update:
 
-            pm_doc = self.get(key, fields={"provider_managed": 1})
+            source_document = self.source_collection[key]
+            destination_document = self[key]
 
-            provider_managed = pm_doc and (pm_doc.get("provider_managed", False) or False)
+            # do dictionary compare to avoid i/o costs updates
+            source_document.pop("_id", None)
 
-            if not provider_managed:
+            if self._docs_equal(source_document, destination_document):
 
-                source_document = self.source_collection[key]
-                destination_document = self[key]
+                self._unchanged_document_count += 1
+                continue
 
-                #do dictionary compare to avoid i/o costs updates
-                source_document.pop("_id", None)
+            updated_document = self._create_destination_document(
+                source_document["synkey"],
+                destination_document.get('nice_key'),
+                source_document
+            )
 
-                if self._docs_equal(source_document, destination_document):
+            if not self.dryrun:
 
-                    self._unchanged_document_count += 1
+                updated_document["_id"] = ObjectId(destination_document["_id"])
 
-                    continue
-
-                updated_document = self._create_destination_document(
-                    source_document["synkey"],
-                    destination_document.get('n_key'),
-                    destination_document.get('nice_key'),
-                    source_document
-                )
-
-                if not self.dryrun:
-
-                    n_key = updated_document.get('n_key')
-                    updated_document["_id"] = ObjectId(destination_document["_id"])
-
-                    self.mongo.save(updated_document)
-                    self._updated_document_count += 1
-                    nkeys.append(n_key)
+                self.mongo.save(updated_document)
+                self._updated_document_count += 1
 
         if not self.dryrun:
 
-            self.queue_manager.queue_update(nkeys)
+            self.queue_manager.queue_update(keys_to_update)
 
     def _docs_equal(self, source_document, destination_document):
 
-        return destination_document.get('n_key') and \
-            source_document.get('nice_key') == destination_document.get('nice_key') and \
+        return source_document.get('nice_key') == destination_document.get('nice_key') and \
             source_document == destination_document.get("payload")
 
     def delete(self, keys_to_delete):
@@ -364,42 +345,36 @@ class NoodleProductionCollection(NoodleWriteableCollection):
         if not self.dryrun:
 
             object_ids = []
-            nkeys = []
+            nice_keys = []
 
             for key in keys_to_delete:
 
-                document = self.get(key, {"n_key": 1, "provider_managed": 1})
+                document = self.get(key, {})
 
-                if document and document.get("provider_managed", False) == False:
+                if document:
 
                     object_ids.append(document["_id"])
-                    nkeys.append(document["n_key"])
+                    nice_keys.append(document["nice_key"])
 
             self.mongo.remove({"_id": {"$in": object_ids}}, multi=True)
             self._deleted_document_count += len(object_ids)
-            self.queue_manager.queue_delete(nkeys)
+            self.queue_manager.queue_delete(nice_keys)
 
-    def _create_destination_document(self, synkey_f, n_key, nice_key, document):
+    def _create_destination_document(self, synkey_f, nice_key, document):
 
         if "_id" in document:
 
             del document["_id"]
 
-        if not n_key:
-
-            n_key = self.key_service.generate_n_key()
-
         if nice_key:
 
             document = {
                 "synkey": synkey_f,
-                "n_key": n_key,
                 "nice_key": nice_key,
                 'psynkey': None,
                 'pn_key': None,
                 'pnice_key': None,
-                "provider_managed": document.get("provider_managed", False) or False,
-                "last_update": datetime.strftime(datetime.utcnow(), "%Y-%m-%d %H:%M:%S"),
+                "last_update": datetime.now().isoformat(),
                 "payload": document,
                 "soft_delete": False,
             }
