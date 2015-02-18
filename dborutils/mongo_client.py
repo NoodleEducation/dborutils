@@ -216,28 +216,48 @@ class NoodleMongoClient(MongoClient):
         contains username and password.
         """
         default_port = 27017
-        host_spec_parts = []
+        host = port = database = collection = user_pass = None
 
+        # Parse out host spec string into tuple(host, port, database, collection) result.
         if host_spec:
+            if re.search(r'@', host_spec):
+                user_pass, host_spec = host_spec.split('@')
+
             host_spec_parts = host_spec.split(':')
 
             if len(host_spec_parts) == 2:
                 # database:collection
                 if not default_host:
-
                     raise Exception("Default host is required when provided a database "
                                     "and collection name only.")
 
-                host_spec_parts.insert(0, default_host)
-                host_spec_parts.insert(1, default_port)
+                host = default_host
+                port = default_port
+                database = host_spec_parts[0]
+                collection = host_spec_parts[1]
+
             elif len(host_spec_parts) == 3:
                 # host:database:collection
-                host_spec_parts.insert(1, default_port)
-            elif len(host_spec_parts) != 4:
-                # NOT host:port:database:collection
-                host_spec_parts = []
+                port = default_port
+                host = host_spec_parts[0]
+                database = host_spec_parts[1]
+                collection = host_spec_parts[2]
 
-        return tuple(host_spec_parts)
+            elif len(host_spec_parts) == 4:
+                # host:port:database:collection
+                host = host_spec_parts[0]
+                port = host_spec_parts[1]
+                database = host_spec_parts[2]
+                collection = host_spec_parts[3]
+
+            else:
+                raise Exception("Does not match parsable connection string format.")
+
+        # Now that connection string is parsed out, add back the user/pass to the host.
+        if user_pass:
+            host = "{0}@{1}".format(user_pass, host)
+
+        return tuple([host, port, database, collection])
 
     @classmethod
     def parse_db_argstring(cls, host_spec):
