@@ -11,6 +11,7 @@ Tests for `dborutils` module.
 import unittest
 
 from dborutils import dborutils
+from dborutils.mongo_client import NoodleMongoClient
 
 
 class TestDborutils(unittest.TestCase):
@@ -18,8 +19,17 @@ class TestDborutils(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_something(self):
-        pass
+    def test_create_from_mongo_spec_without_user_pass(self):
+        mongo_spec = '127.0.0.1:development:categories'
+        mongo_result = NoodleMongoClient.create_from_mongo_spec(mongo_spec)
+
+        self.assertIsNotNone(mongo_result)
+
+    def test_create_from_mongo_spec_with_user_pass(self):
+        mongo_spec = 'noodle:pass@127.0.0.1:development:categories'
+        mongo_result = NoodleMongoClient.create_from_mongo_spec(mongo_spec)
+
+        self.assertIsNotNone(mongo_result)
 
     def tearDown(self):
         pass
