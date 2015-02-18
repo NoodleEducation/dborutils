@@ -7,11 +7,8 @@ class NoodleMongoClient(MongoClient):
     methods directly on the class.
     """
 
-    DIVEBAR_HOST = 'dbor_mongo.noodle.org'
-
     def __init__(self, host, database, collection=None, port=27017, use_nice_key=True, create_collection=False):
 
-        host = host or NoodleMongoClient.DIVEBAR_HOST
         super(NoodleMongoClient, self).__init__(host, port=port)
 
         self.use_nice_key = use_nice_key
@@ -176,14 +173,14 @@ class NoodleMongoClient(MongoClient):
         return "{0}:{1}:{2}:{3}".format(self.host, self.port, self._database.name, self._collection.name)
 
     @classmethod
-    def create_from_mongo_spec(cls, mongo_spec, default_host=None, use_nice_key=True, create_collection=False):
+    def create_from_mongo_spec(cls, mongo_spec, use_nice_key=True, create_collection=False):
         """
         Returns an instance of NoodleMongoClient based on colon-delimited
         host:database:collection spec
         """
         result = None
 
-        spec = cls.parse_argstring(mongo_spec, default_host=default_host)
+        spec = cls.parse_argstring(mongo_spec)
 
         if spec:
             ms = list(spec)
@@ -208,12 +205,12 @@ class NoodleMongoClient(MongoClient):
         return result
 
     @classmethod
-    def parse_argstring(cls, host_spec, default_host=DIVEBAR_HOST):
+    def parse_argstring(cls, host_spec):
         """
         Parses colon-delimited argstring into mongo collection spec
 
-        Returns tuple() or tuple(host, port, database, collection) where host optionally
-        contains username and password.
+        Returns tuple() or tuple(mongo_uri_string, port, database, collection) where
+        mongo_uri_string optionally contains username and password.
         """
         default_port = 27017
         host = port = database = collection = user_pass = None
@@ -227,14 +224,8 @@ class NoodleMongoClient(MongoClient):
 
             if len(host_spec_parts) == 2:
                 # database:collection
-                if not default_host:
-                    raise Exception("Default host is required when provided a database "
-                                    "and collection name only.")
-
-                host = default_host
-                port = default_port
-                database = host_spec_parts[0]
-                collection = host_spec_parts[1]
+                raise Exception("Host is required when provided a database and "
+                                "collection name only.")
 
             elif len(host_spec_parts) == 3:
                 # host:database:collection
@@ -257,7 +248,9 @@ class NoodleMongoClient(MongoClient):
         if user_pass:
             host = "{0}@{1}".format(user_pass, host)
 
-        return tuple([host, port, database, collection])
+        mongo_uri_string = "mongodb://{0}:{1}/{2}".format(host, port, database)
+
+        return tuple([mongo_uri_string, port, database, collection])
 
     @classmethod
     def parse_db_argstring(cls, host_spec):
