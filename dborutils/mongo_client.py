@@ -1,3 +1,4 @@
+import re
 from pymongo import MongoClient
 
 
@@ -211,33 +212,32 @@ class NoodleMongoClient(MongoClient):
         """
         Parses colon-delimited argstring into mongo collection spec
 
-        Returns tuple() or tuple(host, port, database, collection)
+        Returns tuple() or tuple(host, port, database, collection) where host optionally
+        contains username and password.
         """
-
-        DEFAULT_PORT = 27017
-
-        result = []
+        default_port = 27017
+        host_spec_parts = []
 
         if host_spec:
+            host_spec_parts = host_spec.split(':')
 
-            result = host_spec.split(':')
-
-            if len(result) == 2:
+            if len(host_spec_parts) == 2:
                 # database:collection
                 if not default_host:
 
-                    raise Exception("Default host is required when provided a database and collection name only.")
+                    raise Exception("Default host is required when provided a database "
+                                    "and collection name only.")
 
-                result.insert(0, default_host)
-                result.insert(1, DEFAULT_PORT)
-            elif len(result) == 3:
+                host_spec_parts.insert(0, default_host)
+                host_spec_parts.insert(1, default_port)
+            elif len(host_spec_parts) == 3:
                 # host:database:collection
-                result.insert(1, DEFAULT_PORT)
-            elif len(result) != 4:
+                host_spec_parts.insert(1, default_port)
+            elif len(host_spec_parts) != 4:
                 # NOT host:port:database:collection
-                result = []
+                host_spec_parts = []
 
-        return tuple(result)
+        return tuple(host_spec_parts)
 
     @classmethod
     def parse_db_argstring(cls, host_spec):
