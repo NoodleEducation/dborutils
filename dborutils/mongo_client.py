@@ -1,3 +1,4 @@
+import re
 from pymongo import MongoClient
 
 
@@ -6,11 +7,8 @@ class NoodleMongoClient(MongoClient):
     methods directly on the class.
     """
 
-    DIVEBAR_HOST = 'dbor_mongo.noodle.org'
-
     def __init__(self, host, database, collection=None, port=27017, use_nice_key=True, create_collection=False):
 
-        host = host or NoodleMongoClient.DIVEBAR_HOST
         super(NoodleMongoClient, self).__init__(host, port=port)
 
         self.use_nice_key = use_nice_key
@@ -175,14 +173,14 @@ class NoodleMongoClient(MongoClient):
         return "{0}:{1}:{2}:{3}".format(self.host, self.port, self._database.name, self._collection.name)
 
     @classmethod
-    def create_from_mongo_spec(cls, mongo_spec, default_host=None, use_nice_key=True, create_collection=False):
+    def create_from_mongo_spec(cls, mongo_spec, use_nice_key=True, create_collection=False):
         """
         Returns an instance of NoodleMongoClient based on colon-delimited
         host:database:collection spec
         """
         result = None
 
-        spec = cls.parse_argstring(mongo_spec, default_host=default_host)
+        spec = cls.parse_argstring(mongo_spec)
 
         if spec:
             ms = list(spec)
@@ -207,37 +205,52 @@ class NoodleMongoClient(MongoClient):
         return result
 
     @classmethod
-    def parse_argstring(cls, host_spec, default_host=DIVEBAR_HOST):
+    def parse_argstring(cls, host_spec):
         """
         Parses colon-delimited argstring into mongo collection spec
 
-        Returns tuple() or tuple(host, port, database, collection)
+        Returns tuple() or tuple(mongo_uri_string, port, database, collection) where
+        mongo_uri_string optionally contains username and password.
         """
+        default_port = 27017
+        host = port = database = collection = user_pass = None
 
-        DEFAULT_PORT = 27017
-
-        result = []
-
+        # Parse out host spec string into tuple(host, port, database, collection) result.
         if host_spec:
+            if re.search(r'@', host_spec):
+                user_pass, host_spec = host_spec.split('@')
 
-            result = host_spec.split(':')
+            host_spec_parts = host_spec.split(':')
 
-            if len(result) == 2:
+            if len(host_spec_parts) == 2:
                 # database:collection
-                if not default_host:
+                raise Exception("Host is required when provided a database and "
+                                "collection name only.")
 
-                    raise Exception("Default host is required when provided a database and collection name only.")
-
-                result.insert(0, default_host)
-                result.insert(1, DEFAULT_PORT)
-            elif len(result) == 3:
+            elif len(host_spec_parts) == 3:
                 # host:database:collection
-                result.insert(1, DEFAULT_PORT)
-            elif len(result) != 4:
-                # NOT host:port:database:collection
-                result = []
+                port = default_port
+                host = host_spec_parts[0]
+                database = host_spec_parts[1]
+                collection = host_spec_parts[2]
 
-        return tuple(result)
+            elif len(host_spec_parts) == 4:
+                # host:port:database:collection
+                host = host_spec_parts[0]
+                port = host_spec_parts[1]
+                database = host_spec_parts[2]
+                collection = host_spec_parts[3]
+
+            else:
+                raise Exception("Does not match parsable connection string format.")
+
+        # Now that connection string is parsed out, add back the user/pass to the host.
+        if user_pass:
+            host = "{0}@{1}".format(user_pass, host)
+
+        mongo_uri_string = "mongodb://{0}:{1}/{2}".format(host, port, database)
+
+        return tuple([mongo_uri_string, port, database, collection])
 
     @classmethod
     def parse_db_argstring(cls, host_spec):
