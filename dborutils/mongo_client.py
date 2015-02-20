@@ -200,7 +200,6 @@ class NoodleMongoClient(MongoClient):
 
         if spec:
             ms = list(spec)
-            import pdb;pdb.set_trace()
             result = NoodleMongoClient(ms[0], ms[2], collection=None, port=int(ms[1]))
 
         return result
