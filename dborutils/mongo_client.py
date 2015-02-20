@@ -237,7 +237,7 @@ class NoodleMongoClient(MongoClient):
             elif len(host_spec_parts) == 4:
                 # host:port:database:collection
                 host = host_spec_parts[0]
-                port = host_spec_parts[1]
+                port = int(host_spec_parts[1])
                 database = host_spec_parts[2]
                 collection = host_spec_parts[3]
 
@@ -282,7 +282,7 @@ class NoodleMongoClient(MongoClient):
             elif len(host_spec_parts) == 3:
                 # host:port:database
                 host = host_spec_parts[0]
-                port = host_spec_parts[1]
+                port = int(host_spec_parts[1])
                 database = host_spec_parts[2]
 
             else:

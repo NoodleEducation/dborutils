@@ -59,6 +59,14 @@ class TestDborutils(unittest.TestCase):
                          ['mongodb://noodle:pass@localhost:27017/development', 27017,
                           'development'])
 
+    def test_parse_db_argstring_with_user_pass_localhost_with_port(self):
+        mongo_spec = 'noodle:pass@localhost:27017:development'
+        mongo_connection_tuple = NoodleMongoClient.parse_db_argstring(mongo_spec)
+
+        self.assertEqual(list(mongo_connection_tuple),
+                         ['mongodb://noodle:pass@localhost:27017/development', 27017,
+                          'development'])
+
     def test_parse_db_argstring_with_user_pass_no_host(self):
         mongo_spec = 'noodle:pass@development'
 
