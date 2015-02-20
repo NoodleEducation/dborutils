@@ -74,8 +74,11 @@ class MongoCollection(AbstractDocumentCollection):
         documents = self.mongo.find(pm_filter, {self.key: 1})
         self._provider_managed_keys = {d[self.key] for d in documents}
 
-        self.key_to_mongo_id = {d[self.key]: d["_id"] \
-            for d in self.mongo.find(self.filter, {self.key: 1})}
+        self.key_to_mongo_id = {
+            d[self.key]: d["_id"]
+                for d in self.mongo.find(self.filter, {self.key: 2})
+                if self.key in d
+        }
 
     def count(self):
         return self.mongo.find(self.filter, {self.key: 1}).count()
