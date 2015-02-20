@@ -200,6 +200,7 @@ class NoodleMongoClient(MongoClient):
 
         if spec:
             ms = list(spec)
+            import pdb;pdb.set_trace()
             result = NoodleMongoClient(ms[0], ms[2], collection=None, port=int(ms[1]))
 
         return result
@@ -217,7 +218,7 @@ class NoodleMongoClient(MongoClient):
 
         # Parse out host spec string into tuple(host, port, database, collection) result.
         if host_spec:
-            if re.search(r'@', host_spec):
+            if '@' in host_spec:
                 user_pass, host_spec = host_spec.split('@')
 
             host_spec_parts = host_spec.split(':')
@@ -264,7 +265,7 @@ class NoodleMongoClient(MongoClient):
 
         # Parse out host spec string into tuple(host, port, database, collection) result.
         if host_spec:
-            if re.search(r'@', host_spec):
+            if '@' in host_spec:
                 user_pass, host_spec = host_spec.split('@')
 
             host_spec_parts = host_spec.split(':')
@@ -273,7 +274,7 @@ class NoodleMongoClient(MongoClient):
                 # database
                 raise Exception("Host is required when provided only a database name.")
 
-            if len(host_spec_parts) == 2:
+            elif len(host_spec_parts) == 2:
                 # host:database
                 port = default_port
                 host = host_spec_parts[0]
