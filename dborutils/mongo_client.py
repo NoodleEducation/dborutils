@@ -217,7 +217,7 @@ class NoodleMongoClient(MongoClient):
 
         # Parse out host spec string into tuple(host, port, database, collection) result.
         if host_spec:
-            if re.search(r'@', host_spec):
+            if '@' in host_spec:
                 user_pass, host_spec = host_spec.split('@')
 
             host_spec_parts = host_spec.split(':')
@@ -237,7 +237,7 @@ class NoodleMongoClient(MongoClient):
             elif len(host_spec_parts) == 4:
                 # host:port:database:collection
                 host = host_spec_parts[0]
-                port = host_spec_parts[1]
+                port = int(host_spec_parts[1])
                 database = host_spec_parts[2]
                 collection = host_spec_parts[3]
 
@@ -259,33 +259,39 @@ class NoodleMongoClient(MongoClient):
 
         Returns tuple() or tuple(host, port, database)
         """
+        default_port = 27017
+        host = port = database = user_pass = None
 
-        DEFAULT_HOST = 'localhost'
-        DEFAULT_PORT = 27017
-        DEFAULT_COLLECTION = None
-
-        result = []
-
+        # Parse out host spec string into tuple(host, port, database, collection) result.
         if host_spec:
+            if '@' in host_spec:
+                user_pass, host_spec = host_spec.split('@')
 
-            result = host_spec.split(':')
+            host_spec_parts = host_spec.split(':')
 
-            if len(result) == 1:
+            if len(host_spec_parts) == 1:
                 # database
-                if not DEFAULT_HOST:
+                raise Exception("Host is required when provided only a database name.")
 
-                    raise Exception("Default host is required when provided a database and collection name only.")
-
-                result.insert(0, DEFAULT_HOST)
-                result.insert(1, DEFAULT_PORT)
-                result.insert(3, DEFAULT_COLLECTION)
-            elif len(result) == 2:
+            elif len(host_spec_parts) == 2:
                 # host:database
-                result.insert(1, DEFAULT_PORT)
-                result.insert(3, DEFAULT_COLLECTION)
-            elif len(result) != 3:
-                # NOT host:port:database
-                result = []
+                port = default_port
+                host = host_spec_parts[0]
+                database = host_spec_parts[1]
 
-        return tuple(result)
+            elif len(host_spec_parts) == 3:
+                # host:port:database
+                host = host_spec_parts[0]
+                port = int(host_spec_parts[1])
+                database = host_spec_parts[2]
 
+            else:
+                raise Exception("Does not match parsable connection string format.")
+
+        # Now that connection string is parsed out, add back the user/pass to the host.
+        if user_pass:
+            host = "{0}@{1}".format(user_pass, host)
+
+        mongo_uri_string = "mongodb://{0}:{1}/{2}".format(host, port, database)
+
+        return tuple([mongo_uri_string, port, database])
