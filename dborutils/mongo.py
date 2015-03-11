@@ -74,9 +74,6 @@ class MongoCollection(AbstractDocumentCollection):
         documents = self.mongo.find(pm_filter, {self.key: 1})
         self._provider_managed_keys = {d[self.key] for d in documents}
 
-        self.key_to_mongo_id = {d[self.key]: d["_id"] \
-            for d in self.mongo.find(self.filter, {self.key: 1})}
-
     def count(self):
         return self.mongo.find(self.filter, {self.key: 1}).count()
 
@@ -91,9 +88,11 @@ class MongoCollection(AbstractDocumentCollection):
         self.mongo.ensure_index('provider_managed')
 
     def __getitem__(self, key_value, fields=None):
-
-        find_match = {"_id": ObjectId(self.key_to_mongo_id[key_value])}
-
+        """
+        return the document matching `self.key` aka "nice_key" as defined in the
+        `__init__`
+        """
+        find_match = {self.key: key_value}
         documents = self.mongo.find(find_match, fields)
 
         cnt = documents.count()
