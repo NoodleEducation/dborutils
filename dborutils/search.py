@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 
 
@@ -17,17 +19,17 @@ def landing_page_slugify(value):
     consistent with the landing page slugifier in our Django app.
     """
     # Replace special characters with their English equivalent.
-    value = re.sub('À|Á|Â|Ã|Ä|Å', 'A', value)
-    value = re.sub('à|á|â|ã|ä|å', 'a', value)
-    value = re.sub('È|É|Ê|Ë', 'E', value)
-    value = re.sub('è|é|ê|ë', 'e', value)
-    value = re.sub('ì|í|î|ï', 'i', value)
-    value = re.sub('ñ', 'n', value)
-    value = re.sub('Ñ', 'N', value)
-    value = re.sub('ó|ō|ö', 'o', value)
-    value = re.sub('Ó|Ō|Ö', 'O', value)
-    value = re.sub('ù|ú|ü', 'u', value)
-    value = re.sub('Ù|Ú|Ü', 'U', value)
+    value = re.sub(u'À|Á|Â|Ã|Ä|Å', u'A', value)
+    value = re.sub(u'à|á|â|ã|ä|å', u'a', value)
+    value = re.sub(u'È|É|Ê|Ë', u'E', value)
+    value = re.sub(u'è|é|ê|ë', u'e', value)
+    value = re.sub(u'ì|í|î|ï', u'i', value)
+    value = re.sub(u'ñ', u'n', value)
+    value = re.sub(u'Ñ', u'N', value)
+    value = re.sub(u'ó|ō|ö', u'o', value)
+    value = re.sub(u'Ó|Ō|Ö', u'O', value)
+    value = re.sub(u'ù|ú|ü', u'u', value)
+    value = re.sub(u'Ù|Ú|Ü', u'U', value)
 
     # Replace underscores with space.
     value = re.sub('_', ' ', value)
