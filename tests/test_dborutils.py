@@ -16,8 +16,16 @@ from dborutils.mongo_client import NoodleMongoClient
 
 class TestDborutils(unittest.TestCase):
 
-    def setUp(self):
-        pass
+    values = 'À|Á|Â|Ã|Ä|Å|à|á|â|ã|ä|å|È|É|Ê|Ë|è|é|ê|ë|ì|í|î|ï|ñ|Ñ|ó|ō|ö|Ó|Ō|Ö|ù|ú|ü|Ù|Ú|Ü'.split('|')
+    unicode_values = u'À|Á|Â|Ã|Ä|Å|à|á|â|ã|ä|å|È|É|Ê|Ë|è|é|ê|ë|ì|í|î|ï|ñ|Ñ|ó|ō|ö|Ó|Ō|Ö|ù|ú|ü|Ù|Ú|Ü'.split('|')
+
+    def test_character_is_not_unicode(self):
+        for value in self.values:
+            assert str(value) != unicode(value, encoding='utf-8')
+
+    def test_character_is_unicode(self):
+        for value in self.unicode_values:
+            assert value == unicode(value)
 
     def test_parse_argstring_without_user_pass(self):
         mongo_spec = '127.0.0.1:local:categories'
@@ -78,9 +86,6 @@ class TestDborutils(unittest.TestCase):
 
         with self.assertRaises(Exception):
             NoodleMongoClient.parse_db_argstring(mongo_spec)
-
-    def tearDown(self):
-        pass
 
 if __name__ == '__main__':
     unittest.main()
