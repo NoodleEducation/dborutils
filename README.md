@@ -28,3 +28,4 @@ You can import, for instance, the `MongoCollection` class, this way:
 ```
 from dborutils.mongo import MongoCollection
 ```
+
