@@ -15,15 +15,14 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 
 readme = open('README.md').read()
-history = open('HISTORY.md').read().replace('.. :changelog:', '')
 
 setup(
     name='dborutils',
     version='0.4.3',
-    description='DBOR Utilities contains shared classes related to our Database of Record Project',
-    long_description=readme + '\n\n' + history,
-    author='Josvic Zammit',
-    author_email='jvzammit@gmail.com',
+    description='DBOR Utilities contains code shared between multiple Noodle repositories.',
+    long_description=readme
+    author='Noodle',
+    author_email='data@noodle.com',
     url='https://github.com/NoodleEducation/dborutils',
     packages=[
         'dborutils',
