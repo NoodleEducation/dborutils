@@ -1,10 +1,11 @@
 from uuid import uuid1
 from uuid import uuid4
+from numpy import base_repr
 
 
 class NoodleKeyService(object):
 
-    NICE_KEY_GOAL_LENGTH = 5
+    NICE_KEY_GOAL_LENGTH = 10
 
     def __init__(self, source_client=None, destination_client=None):
 
@@ -40,7 +41,9 @@ class NoodleKeyService(object):
             # Try to obtain unique key maximum of [unique_tries] times
             for j in range(unique_tries):
 
-                candidate_nice_key = prefix + uuid4().hex[0:curr_goal_len]
+                # prefix + random 128-bit number compacted to base 36 (a-z,1-9)
+                candidate_nice_key = prefix + base_repr(uuid4().int, 36).lower()
+                candidate_nice_key = candidate_nice_key[0:curr_goal_len]  # Truncate
 
                 if candidate_nice_key not in self._generated_nice_keys:
 
@@ -116,8 +119,8 @@ class NoodleKeyService(object):
 
     def assign_nice_keys(self):
         """
-        Iterate through all the empty nice_key documents a
-        nice_key to any documents that do not
+        Iterate through all the empty nice_key documents and assign a
+        nice_key to any documents that do not have one
         """
 
         print "Assigning nice_key values to new documents on {0}...".format(self.source_client)
