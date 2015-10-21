@@ -10,7 +10,6 @@ Tests for `dborutils` module.
 
 import unittest
 
-from dborutils import dborutils
 from dborutils.mongo_client import NoodleMongoClient
 
 
