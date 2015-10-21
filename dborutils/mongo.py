@@ -80,11 +80,11 @@ class MongoCollection(AbstractDocumentCollection):
     def _ensure_indices(self):
 
         """
-            Ensures a unique index on the lookup key for a collection (synkey or nice_key)
-            Ensures indices on provider_managed
+        Ensures a unique index on the lookup key for a collection (synkey or nice_key)
+        Ensures indices on provider_managed
         """
 
-        _ = [self.mongo.ensure_index(field, unique=True) for field in ['nice_key']]
+        [self.mongo.ensure_index(field, unique=True) for field in ['nice_key']]
 
     def __getitem__(self, key_value, fields=None):
         find_match = {'_id': ObjectId(
@@ -129,11 +129,10 @@ class MongoCollection(AbstractDocumentCollection):
 
 class NoodleWriteableCollection(MongoCollection):
     """
-        Abstract base class for managing writeable Mongo collections
+    Abstract base class for managing writeable Mongo collections
     """
 
-    def __init__(self, noodle_client, key="nice_key", dryrun=None, filter=None,
-        ):
+    def __init__(self, noodle_client, key="nice_key", dryrun=None, filter=None):
 
         self.dryrun = dryrun
         self._unchanged_document_count = 0
@@ -182,8 +181,9 @@ class NoodleWriteableCollection(MongoCollection):
 
 class NoodleDborCollection(NoodleWriteableCollection):
 
-    """ Manages DBOR_MONGO collections in which the document is not
-        nested in a payload and nice_key/synkeys are correctly maintained.
+    """
+    Manages DBOR_MONGO collections in which the document is not
+    nested in a payload and nice_key/synkeys are correctly maintained.
     """
 
     def __init__(self, noodle_client, dryrun=None, filter=None):
@@ -264,10 +264,11 @@ class NoodleDborCollection(NoodleWriteableCollection):
 
 
 class NoodleProductionCollection(NoodleWriteableCollection):
-    """ Manages Production collections in which the document is
-        nested in a payload and nice_key/synkeys are correctly maintained.
+    """
+    Manages Production collections in which the document is
+    nested in a payload and nice_key/synkeys are correctly maintained.
 
-        Also managed queue insertions for SOLR indexing.
+    Also managed queue insertions for SOLR indexing.
     """
 
     def __init__(self, noodle_client, key="nice_key", queue_manager=None, dryrun=None, filter=None):

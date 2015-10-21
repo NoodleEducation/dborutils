@@ -1,4 +1,3 @@
-import re
 from pymongo import MongoClient
 
 
@@ -34,7 +33,8 @@ class NoodleMongoClient(MongoClient):
 
                 else:
 
-                    raise KeyError("Could not find collection '{1}' in database '{0}'".format(self._database, collection))
+                    raise KeyError("Could not find collection '{1}' in database '{0}'".format(
+                        self._database, collection))
 
     def database(self):
 
@@ -150,7 +150,8 @@ class NoodleMongoClient(MongoClient):
                     if unique and not v.get('unique'):
 
                         if not self.use_nice_key:
-                            raise KeyError("No unique index available for '{0}' on '{1} {2}.{3}'".format(field, self.host, self._database.name, self._collection.name))
+                            raise KeyError("No unique index available for '{0}' on '{1} {2}.{3}'".format(
+                                field, self.host, self._database.name, self._collection.name))
 
                     result = True
 
@@ -158,7 +159,8 @@ class NoodleMongoClient(MongoClient):
 
         if not result:
 
-            raise KeyError("Could not find {0}index for '{1}' on '{2} {3}.{4}'.".format("unique " if unique else "", field, self.host, self._database.name, self._collection.name))
+            raise KeyError("Could not find {0}index for '{1}' on '{2} {3}.{4}'.".format(
+                "unique " if unique else "", field, self.host, self._database.name, self._collection.name))
 
     def index_information(self):
 
@@ -184,8 +186,12 @@ class NoodleMongoClient(MongoClient):
 
         if spec:
             ms = list(spec)
-            result = NoodleMongoClient(ms[0], ms[2], ms[3], port=int(ms[1]), use_nice_key=use_nice_key, create_collection=create_collection)
-
+            result = NoodleMongoClient(ms[0],
+                                       ms[2],
+                                       ms[3],
+                                       port=int(ms[1]),
+                                       use_nice_key=use_nice_key,
+                                       create_collection=create_collection)
         return result
 
     @classmethod

@@ -6,10 +6,7 @@ class NoodleKeyService(object):
 
     NICE_KEY_GOAL_LENGTH = 5
 
-    def __init__(self,
-        source_client=None,
-        destination_client=None,
-    ):
+    def __init__(self, source_client=None, destination_client=None):
 
         self.source_client = source_client
         self.prefix = None
@@ -74,7 +71,10 @@ class NoodleKeyService(object):
 
         if nice_key and doc.get("nice_key", None) is None:
 
-            return self.source_client.update({"_id": doc["_id"]}, {"$set": {"nice_key": nice_key, "ids.nice_key": nice_key}}, upsert=False)
+            return self.source_client.update({"_id": doc["_id"]},
+                                             {"$set": {"nice_key": nice_key,
+                                                       "ids.nice_key": nice_key}},
+                                             upsert=False)
 
     def synchronize_nice_keys(self):
 
@@ -148,4 +148,3 @@ class NoodleKeyService(object):
                     print progress_report.format(ct + 1)
 
             print progress_report.format(empty_nice_keys.count())
-

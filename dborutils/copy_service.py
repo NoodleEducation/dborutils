@@ -18,8 +18,7 @@ class NoodleCopyService(object):
                  source_documents,
                  destination_documents,
                  actions="create:update:delete",
-                 update_progress_at=1000,
-    ):
+                 update_progress_at=1000):
 
         self.source_documents = source_documents
         self.destination_documents = destination_documents
@@ -57,7 +56,8 @@ class NoodleCopyService(object):
         if source_docs_cnt == dest_docs_cnt:
             logger.info("Documents on source and destination match: {0}.".format(source_docs_cnt))
         else:
-            logger.info("WARNING! Documents on source and destination differ. Source {0} Destination {1}.".format(source_docs_cnt, dest_docs_cnt))
+            logger.info("WARNING! Documents on source and destination differ. Source {0} Destination {1}.".format(
+                source_docs_cnt, dest_docs_cnt))
 
 
 class NoodleMongoProdCopyService(NoodleCopyService):
@@ -86,7 +86,10 @@ class NoodleMongoProdCopyService(NoodleCopyService):
 
             delete_set = dest_set - source_set
 
-            batch_manager.new_collection('Delete', len(delete_set), self.destination_documents.delete, batch_limit=self.batch_delete_size)
+            batch_manager.new_collection('Delete',
+                                         len(delete_set),
+                                         self.destination_documents.delete,
+                                         batch_limit=self.batch_delete_size)
 
             for key in delete_set:
 
@@ -98,7 +101,10 @@ class NoodleMongoProdCopyService(NoodleCopyService):
 
             insert_set = source_set - dest_set
 
-            batch_manager.new_collection('Insert', len(insert_set), self.destination_documents.insert, batch_limit=self.batch_insert_size)
+            batch_manager.new_collection('Insert',
+                                         len(insert_set),
+                                         self.destination_documents.insert,
+                                         batch_limit=self.batch_insert_size)
 
             for key in insert_set:
 
@@ -110,7 +116,10 @@ class NoodleMongoProdCopyService(NoodleCopyService):
 
             update_set = source_set & dest_set
 
-            batch_manager.new_collection('Update', len(update_set), self.destination_documents.update, batch_limit=self.batch_update_size)
+            batch_manager.new_collection('Update',
+                                         len(update_set),
+                                         self.destination_documents.update,
+                                         batch_limit=self.batch_update_size)
 
             for key in update_set:
 
@@ -122,13 +131,16 @@ class NoodleMongoProdCopyService(NoodleCopyService):
         dest_docs_cnt = self.destination_documents.count()
         provider_managed_cnt = self.destination_documents.provider_managed_document_count()
 
-        self.display_completion("Loader completed", source_docs_cnt, dest_docs_cnt, provider_managed_cnt)
+        self.display_completion("Loader completed",
+                                source_docs_cnt,
+                                dest_docs_cnt,
+                                provider_managed_cnt)
 
     def get_source_keyset(self, provider_managed_set=None):
 
         return frozenset(self.source_documents) \
-            - (provider_managed_set \
-                 or self.destination_documents.provider_managed_keys())
+            - (provider_managed_set
+               or self.destination_documents.provider_managed_keys())
 
 
 class NoodleScrapedMongoCopyService(NoodleCopyService):
@@ -158,11 +170,17 @@ class NoodleScrapedMongoCopyService(NoodleCopyService):
 
         if "create" in self.actions:
             insert_batch_manager = BatchManager(self.status)
-            insert_batch_manager.new_collection('Insert', None, self.destination_documents.insert, batch_limit=self.batch_insert_size)
+            insert_batch_manager.new_collection('Insert',
+                                                None,
+                                                self.destination_documents.insert,
+                                                batch_limit=self.batch_insert_size)
 
         if "update" in self.actions:
             update_batch_manager = BatchManager(self.status)
-            update_batch_manager.new_collection('Update', None, self.destination_documents.update, batch_limit=self.batch_update_size)
+            update_batch_manager.new_collection('Update',
+                                                None,
+                                                self.destination_documents.update,
+                                                batch_limit=self.batch_update_size)
 
         for document in self.source_documents:
 
