@@ -30,7 +30,9 @@ setup(
     package_dir={'dborutils': 'dborutils'},
     include_package_data=True,
     install_requires=[
-        'pymongo==2.6.3',
+        'pymongo==2.7.1',
+        'wheel=0.23.0',
+        'numpy==1.9',
     ],
     license="BSD",
     zip_safe=False,
