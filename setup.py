@@ -32,7 +32,7 @@ setup(
     # Keep in sync with requirements.txt!
     install_requires=[
         'pymongo==2.7.1',
-        'wheel==0.23.0',
+        'wheel==0.26.0',
         'numpy==1.9',
     ],
     license="BSD",
