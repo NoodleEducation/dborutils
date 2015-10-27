@@ -1,3 +1,4 @@
+# Keep in sync with setup.py!
 pymongo==2.7.1
 wheel==0.23.0
 numpy==1.9
