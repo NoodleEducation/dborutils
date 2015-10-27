@@ -20,7 +20,7 @@ setup(
     name='dborutils',
     version='0.4.4',
     description='DBOR Utilities contains code shared between multiple Noodle repositories.',
-    long_description=readme
+    long_description=readme,
     author='Noodle',
     author_email='data@noodle.com',
     url='https://github.com/NoodleEducation/dborutils',
