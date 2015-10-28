@@ -20,7 +20,7 @@ setup(
     name='dborutils',
     version='0.4.4',
     description='DBOR Utilities contains code shared between multiple Noodle repositories.',
-    long_description=readme
+    long_description=readme,
     author='Noodle',
     author_email='data@noodle.com',
     url='https://github.com/NoodleEducation/dborutils',
@@ -29,10 +29,11 @@ setup(
     ],
     package_dir={'dborutils': 'dborutils'},
     include_package_data=True,
+    # Keep in sync with requirements.txt!
     install_requires=[
         'pymongo==2.7.1',
-        'wheel=0.23.0',
-        'numpy==1.9',
+        'wheel==0.26.0',
+        'numpy==1.10.1',
     ],
     license="BSD",
     zip_safe=False,
