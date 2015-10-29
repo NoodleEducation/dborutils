@@ -18,7 +18,7 @@ readme = open('README.md').read()
 
 setup(
     name='dborutils',
-    version='0.4.4',
+    version='0.4.5',
     description='DBOR Utilities contains code shared between multiple Noodle repositories.',
     long_description=readme,
     author='Noodle',
