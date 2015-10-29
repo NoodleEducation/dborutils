@@ -3,6 +3,12 @@ from uuid import uuid4
 from numpy import base_repr
 
 
+# Changing this will require DB migrations in both dbor_wip and
+# noodle-api!!!  Do not reduce below the longest existing nice_keys
+# across all tables!!!
+NICE_KEY_MAX_LENGTH = 20
+
+
 class NoodleKeyService(object):
 
     # This INCLUDES the two-character prefix!
