@@ -5,7 +5,8 @@ from numpy import base_repr
 
 class NoodleKeyService(object):
 
-    NICE_KEY_GOAL_LENGTH = 10
+    # This INCLUDES the two-character prefix!
+    NICE_KEY_GOAL_LENGTH = 12
 
     def __init__(self, source_client=None, destination_client=None):
 
