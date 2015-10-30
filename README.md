@@ -1,30 +1,17 @@
 # dborutils
 
-Shared classes related to our Database of Record Project
+Code shared among multiple Noodle repositories
+
 
 ## Installation
 
-Execute:
+See docker/README.md in the build repo.  dborutils is imported as a
+dependency in other repos; no explicit setup is required.
 
-```
-pip install git+https://github.com/NoodleEducation/dborutils
-```
 
-To install a particular branch only:
+## Tests
 
-```
-pip install git+https://github.com/NoodleEducation/dborutils.git@[branch-name]
-```
-### Github Two Factor Authentication
+In build/docker:
 
-If you have enabled Github two factor authentication, then you will need to provide
-an auth token instead of your password when installing. You create and save a token
-on Github's site.
-
-## Usage
-
-You can import, for instance, the `MongoCollection` class, this way:
-
-```
-from dborutils.mongo import MongoCollection
-```
+fig run dborutils bash -c "./reset_environment.sh"
+fig run dborutils bash -c "./run_tests.sh"

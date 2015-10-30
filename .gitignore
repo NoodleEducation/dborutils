@@ -1,3 +1,7 @@
+# Python virtual environment (build output for requirements.txt)
+virtualenv/
+
+# Python compiled files, etc.
 *.py[cod]
 
 # C extensions
