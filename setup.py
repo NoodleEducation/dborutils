@@ -33,7 +33,6 @@ setup(
     install_requires=[
         'pymongo==2.7.1',
         'wheel==0.26.0',
-        'numpy==1.10.1',
     ],
     license="BSD",
     zip_safe=False,

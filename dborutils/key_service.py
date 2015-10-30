@@ -1,6 +1,6 @@
 from uuid import uuid1
 from uuid import uuid4
-from numpy import base_repr
+from numpy_excerpt import base_repr
 
 
 # Changing this will require DB migrations in both dbor_wip and
