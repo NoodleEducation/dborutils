@@ -1,3 +1,8 @@
 # Keep in sync with setup.py!
 pymongo==2.7.1
 wheel==0.26.0
+
+# For testing
+flake8==2.4.1
+mock==1.3.0
+nose==1.3.7
