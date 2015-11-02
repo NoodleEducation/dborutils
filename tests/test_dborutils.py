@@ -7,7 +7,6 @@ Tests for the dborutils repo.
 import re
 from mock import patch
 from unittest import TestCase
-import unittest
 
 from dborutils.mongo_client import NoodleMongoClient
 from dborutils.key_service import NoodleKeyService
@@ -83,6 +82,3 @@ class TestDborutils(TestCase):
         nks = NoodleKeyService()
         test_key = nks.generate_nice_key(prefix="yz")
         self.assertTrue(re.match("yz\w\w\w\w\w\w\w\w\w\w", test_key))
-
-if __name__ == '__main__':
-    unittest.main()
