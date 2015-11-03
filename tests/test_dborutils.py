@@ -1,22 +1,19 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
-test_dborutils
-----------------------------------
-
-Tests for `dborutils` module.
+Tests for the dborutils repo.
 """
 
+import re
+from mock import patch
+from unittest import TestCase
 import unittest
 
 from dborutils.mongo_client import NoodleMongoClient
+from dborutils.key_service import NoodleKeyService
 
 
-class TestDborutils(unittest.TestCase):
-
-    def setUp(self):
-        pass
+class TestDborutils(TestCase):
 
     def test_parse_argstring_without_user_pass(self):
         mongo_spec = '127.0.0.1:local:categories'
@@ -78,8 +75,14 @@ class TestDborutils(unittest.TestCase):
         with self.assertRaises(Exception):
             NoodleMongoClient.parse_db_argstring(mongo_spec)
 
-    def tearDown(self):
-        pass
+    def fake_is_unique(self, candidate_nice_key):
+        return True
+
+    @patch('dborutils.key_service.NoodleKeyService._is_nice_key_unique')
+    def test_key_service(self, fake_is_unique):
+        nks = NoodleKeyService()
+        test_key = nks.generate_nice_key(prefix="yz")
+        self.assertTrue(re.match("yz\w\w\w\w\w\w\w\w\w\w", test_key))
 
 if __name__ == '__main__':
     unittest.main()
