@@ -3,4 +3,4 @@
 
 __author__ = 'Noodle'
 __email__ = 'data@noodle.com'
-__version__ = '0.4.6'
+__version__ = '0.4.7'
