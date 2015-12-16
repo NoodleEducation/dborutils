@@ -28,7 +28,7 @@ lint:
 	flake8 dborutils tests
 
 test:
-	virtualenv/bin/python setup.py test
+	python setup.py test
 
 test-all:
 	tox
